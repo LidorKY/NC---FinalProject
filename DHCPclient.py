@@ -2,8 +2,8 @@ import socket, sys
 
 MAX_BYTES = 1024
 
-serverPort = 67
-clientPort = 68
+serverPort = 20230
+clientPort = 30714
 
 
 class DHCP_client(object):
@@ -12,7 +12,7 @@ class DHCP_client(object):
         dest = ('<broadcast>', serverPort)
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        #s.bind(('0.0.0.0', clientPort))
+        s.bind(('0.0.0.0', clientPort))
 
         print("Send DHCP discovery.")
         data = DHCP_client.discover_get();
