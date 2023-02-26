@@ -1,5 +1,8 @@
+import random
 from random import randint
 import socket
+from time import sleep
+
 from scapy.all import *
 from scapy.layers import dhcp
 from scapy.layers.dhcp import DHCP, BOOTP
@@ -13,18 +16,25 @@ def client_connection():
     print("Client is running...\n")
 
     discover_packet()
+    print("The client has sent the discover packet")
 
-    off_packet = sniff(count=1, filter='udp and (port 67 or port 68)')
+    off_packet = sniff(count=1, filter='udp and (port 67)')
+    print("The client got the offer packet")
 
+    sleep(2)
     request_packet(off_packet)
+    print("The client has sent the request packet")
 
-    ack_pack = sniff(count=1, filter='udp and (port 67 or port 68)')
+    ack_pack = sniff(count=1, filter='udp and (port 67)')
+    print("The client got the ack packet")
+    return
+
 
 
 def discover_packet():
     #------------Ethernet Layer--------------#
     ether = Ether()
-    ether.src = "00:11:22:33:44:55" #can also use RandMAC() function
+    ether.dst = "ff:ff:ff:ff:ff:ff" #can also use RandMAC() function
     #ether.show()
     # ---------------------------------------#
 
@@ -32,6 +42,7 @@ def discover_packet():
     # ------------IP Layer--------------#
     ip = IP()
     ip.src = '0.0.0.0'
+    ip.dst = '255.255.255.255'
     # ip.show()
     # -----------------------------------#
 
@@ -46,12 +57,13 @@ def discover_packet():
 
     # ------------Didn't fully understand this Layer--------------#
     bootp = BOOTP()
-    bootp.ciaddr = ip.src
+    bootp.xid = random.randint(1, pow(2, 32)-1)
+    bootp.flags = 1
+    # bootp.ciaddr = ip.src
     # bootp.yiaddr =
     bootp.siaddr = "10.0.2.15"
     # bootp.giaddr =
-    bootp.chaddr = "00:11:22:33:44:55"
-    bootp.flags = 1
+
     # udp.show()
     # ------------------------------------------------------------#
 
@@ -75,15 +87,15 @@ def discover_packet():
 def request_packet(off_packet):
     # ------------Ethernet Layer--------------#
     ether = Ether()
-    ether.src = "00:11:22:33:44:55"
+    ether.dst = "ff:ff:ff:ff:ff:ff"
     # ether.show()
     # ----------------------------------------#
 
 
     # ------------IP Layer--------------#
     ip = IP()
-    ip.src = off_packet[0][3].yiaddr
-    ip.dst = off_packet[0][1].src
+    ip.src = '0.0.0.0'
+    ip.dst = '255.255.255.255'
     # ip.show()
     # ----------------------------------#
 
@@ -98,12 +110,13 @@ def request_packet(off_packet):
 
     # ------------Didn't fully understand this Layer--------------#
     bootp = BOOTP()
-    bootp.ciaddr = ip.src
-    # bootp.yiaddr =
-    bootp.siaddr = "10.0.2.15"
-    # bootp.giaddr =
-    bootp.chaddr = "00:11:22:33:44:55"
+    bootp.xid = off_packet[0][3].xid
     bootp.flags = 1
+    # bootp.ciaddr = ip.src
+    # bootp.yiaddr =
+    # bootp.siaddr = "10.0.2.15"
+    # bootp.giaddr =
+    # bootp.chaddr = "00:11:22:33:44:55"
     # udp.show()
     # ------------------------------------------------------------#
 

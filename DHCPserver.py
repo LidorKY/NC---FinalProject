@@ -1,5 +1,8 @@
 from random import randint
 import socket
+from time import sleep
+
+from numpy import character
 from scapy.all import *
 from scapy.layers import dhcp
 from scapy.layers.dhcp import DHCP, BOOTP
@@ -8,31 +11,45 @@ from scapy.layers.inet import IP, UDP
 from scapy.layers.l2 import Ether, ARP
 
 def server_connection():
-
     print("Server is running...\n")
+    arr = ip_List()
+    while True:
+        print("pls start the client")
 
-    disco_packet = sniff(count=1, filter='udp and (port 67 or port 68)')
+        disco_packet = sniff(count=1, filter='udp and (port 68)')
+        print("The server got the discover packet")
 
-    offer_packet(disco_packet)
+        sleep(2)
+        offer_packet(disco_packet, arr)
+        print("The server has sent the offer packet")
 
-    req_packet = sniff(count=1, filter='udp and (port 67 or port 68)')
+        req_packet = sniff(count=1, filter='udp and (port 68)')
+        print("The server got the request packet")
 
-    ack_packet(req_packet)
+        sleep(2)
+        ack_packet(req_packet)
+        print("The server has sent the ack packet")
 
+        print("press 1 to continue and 0 to stop")
 
-def offer_packet(disco_packet):
+        if 0 == input():
+            break
+
+    return
+
+def offer_packet(disco_packet, arr):
     # ------------Ethernet Layer--------------#
     ether = Ether()
-    ether.src = "08:00:27:d3:c1:ef"
-    ether.dst = disco_packet[0][0].src
+    # ether.src = "08:00:27:d3:c1:00"
+    ether.dst = "ff:ff:ff:ff:ff:ff"
     # ether.show()
     # ----------------------------------------#
 
 
     # ------------IP Layer--------------#
     ip = IP()
-    ip.src = '10.0.2.15'
-    ip.dst = disco_packet[0][1].src
+    ip.src = '192.168.1.1'
+    ip.dst = '255.255.255.255'
     # ip.show()
     # -----------------------------------#
 
@@ -47,8 +64,10 @@ def offer_packet(disco_packet):
 
     # ------------Didn't fully understand this Layer--------------#
     bootp = BOOTP()
+    bootp.xid = disco_packet[0][3].xid
     bootp.flags = 2
-    bootp.yiaddr = "192.168.1.1"
+    bootp.yiaddr = arr[0]
+    arr.pop(0)
     bootp.sname = "I am the DHCP server"
     # udp.show()
     # ------------------------------------------------------------#
@@ -71,16 +90,16 @@ def offer_packet(disco_packet):
 def ack_packet(req_packet):
     # ------------Ethernet Layer--------------#
     ether = Ether()
-    ether.src = "08:00:27:d3:c1:ef"
-    ether.dst = req_packet[0][0].src
+    # ether.src = "08:00:27:d3:c1:00"
+    ether.dst = "ff:ff:ff:ff:ff:ff"
     # ether.show()
     # ----------------------------------------#
 
 
     # ------------IP Layer--------------#
     ip = IP()
-    ip.src = '10.0.2.15'
-    ip.dst = req_packet[0][1].src
+    ip.src = '192.168.1.1'
+    ip.dst = '255.255.255.255'
     # ip.show()
     # -----------------------------------#
 
@@ -95,6 +114,7 @@ def ack_packet(req_packet):
 
     # ------------Didn't fully understand this Layer--------------#
     bootp = BOOTP()
+    bootp.xid = req_packet[0][3].xid
     bootp.flags = 2
     bootp.sname = "I am the DHCP server"
     # udp.show()
@@ -115,6 +135,12 @@ def ack_packet(req_packet):
     sendp(dhcp_ack)
 
 
+
+def ip_List():
+    ip_list = []
+    for x in range(20, 201):
+        ip_list.append("192.168.1." + str(x))
+    return ip_list
 
 
 
