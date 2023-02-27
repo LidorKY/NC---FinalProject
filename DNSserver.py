@@ -1,66 +1,53 @@
+
 import nslookup as nslookup
-from scapy.all import DNS, DNSQR, IP, sr1, UDP
+from scapy.all import DNS, DNSQR, IP, sr1, UDP, sendp, send, sniff, sndrcv
 from random import randint
 import socket
 from scapy.all import *
 from scapy.layers import dhcp
 from scapy.layers.dhcp import DHCP, BOOTP
-from scapy.layers.dns import DNS
+from scapy.layers.dns import DNS, DNSQR, DNSRR
 from scapy.layers.inet import IP, UDP
 from scapy.layers.l2 import Ether, ARP
 
 
 def server_connection():
-    print(conf.iface)
+    print("Hello I am the DNS server")
+    que_packet = sniff(count=1, filter='udp port 53')
+    print("sniffed packet")
 
 
+    response_packet(que_packet)
+    print("server sent response")
 
 
-
-def check():
-    # print("0")
-    # ether = Ether()
-    # ether.src = "08:00:27:d3:c1:ef"
-
-
-    print("1")
+def response_packet(que_packet):
     ip = IP()
-    # ip.src = '10.0.2.15'
-    ip.dst = '8.8.8.8'
+    ip.src = '192.168.0.5'
+    ip.dst = que_packet[0][1].src
 
-    print("2")
     udp = UDP()
-    udp.dport = 53
+    udp.sport = que_packet[0][2].dport
+    udp.dport = que_packet[0][2].sport
 
-
-    print("4")
     dns = DNS()
+    dns.id = que_packet[0][3].id
+    dns.qr = 1
     dns.rd = 1
-    dns.qd = DNSQR(qname='www.google.com')
+    dns.ra = 1
 
-    print("5")
-    dns_request = ip / udp / dns
+    dns.qd = que_packet[0][3].qd
+    dns.an = DNSRR()
+    dns.an.rrname = que_packet[0][3].qd.qname
+    dns.an.rdata = socket.getaddrinfo(dns.an.rrname, 53)
+    dns.an.type = 'A'
 
-    print("6")
-    sent = sr1(dns_request, verbose=0)
-    print(sent.summary())
+    dns_response = ip / udp / dns
+    print("here")
+    send(dns_response)
 
-    # print("7")
-    # response_packet = sniff(count=1, filter='udp and (port 53)')
-
-    # print("8")
-    # response_packet.show()
-
-
-
-def response():
-    hello = 6
 
 
 
 if __name__ == "__main__":
-    # server_connection()
-    # check()
-    check = socket.getaddrinfo("geeksforgeeks.org", 53)
-    print(check)
-    # check[0][]
+    server_connection()
