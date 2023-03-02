@@ -51,16 +51,16 @@ def http_request():
 if __name__ == "__main__":
 
     # using UDP protocol
-    server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    porxy_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     # local host and port
-    server.bind(("0.0.0.0", 20230))
+    porxy_udp.bind(('', 20230))
 
     # the loop for receiving and sending the data
     print("hello I am the Proxy server - the actual app\n")
     while True:
         # receiving data
-        data, address = server.recvfrom(1024)
+        data, address = porxy_udp.recvfrom(1024)
         print("got message from client")
 
         # decoding tha data
@@ -80,53 +80,77 @@ if __name__ == "__main__":
         data = data.encode()
 
         # send the ack back to the client
-        server.sendto(data, address)
-        ptint("sent ack to client")
+        porxy_udp.sendto(data, address)
+        print("sent ack to client")
 
-
+########################################################################################################################
 
         #want to go to server that holds the site - now tcp connection
 
 
-        # Send the TCP SYN packet
-        print("connecing to site server")
-        sleep(2)
-        syn_packet()
+        # # Send the TCP SYN packet
+        # print("connecing to site server")
+        # sleep(2)
+        # syn_packet()
+        # print("sent syn")
+        #
+        # syn_ack_packet = sniff(count=1, filter='tcp port 1030')
+        # print("get syn ack")
+        #
+        #
+        # # Create the HTTP GET request packet
+        # sleep(2)
+        # http_request()
+        # print("sent http request")
+        #
+        # http_response = sniff(count=1, filter='tcp port 1030')
+        #
+        # # Print the HTTP response
+        # http_response[0].show()
+        # print("finished with site server")
 
-        syn_ack_packet = sniff(count=1, filter='tcp port 1030')
+        print("connecting to site server")
+        proxy_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        # Create the HTTP GET request packet
-        sleep(2)
-        http_request()
+        server_site_address = ('127.0.0.1', 80)
 
-        http_response = sniff(count=1, filter='tcp port 1030')
+        proxy_tcp.connect(server_site_address)
 
-        # Print the HTTP response
-        print(http_response.show())
-        print("finished with site server")
+        http_request = b"GET /index.html HTTP/1.1\r\nHost: www.example.com\r\n\r\n"
+
+        proxy_tcp.sendall(http_request)
+        print("sent http request")
+
+        http_response = proxy_tcp.recv(1024)
+        print("got http response")
+
+        proxy_tcp.close()
+        print("closed tcp socket")
 
 
 
-
+######################################################################################################################
         print("start responding to client")
+        fp = open("site.html", 'r')
+
         #need to get the site from the http response packet
-        data = 'example.com'
+        data = fp.read(-1)
 
         # encoding the data
         data = data.encode()
 
         #send the site to the client
-        server.sendto(data, address)
+        porxy_udp.sendto(data, address)
 
         # receiving ack
-        data, address = server.recvfrom(1024)
+        data, address = porxy_udp.recvfrom(1024)
 
         if data.decode("utf-8") != 'ack':
             print("error")
             break
 
         else:
-            print("got ack")
+            print("got ack - for receiving the html file")
 
         print("finish!!!")
         break
@@ -136,5 +160,5 @@ if __name__ == "__main__":
 
 
     #close the socket
-    server.close()
+    porxy_udp.close()
     print("---Successfully closed the socket")

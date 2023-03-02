@@ -33,17 +33,17 @@ if __name__ == "__main__":
 
         #option for closing the socket
         if data == "stop":
-            data = data.encode("utf-8")
-            client.sendto(data, ("192.168.1.1", 20230))
-
-            print("---The client has successfully diconected from the server")
+            data = data.encode()
+            client.sendto(data, ("127.0.0.1", 20230))
+            client.close()
+            print("---The client has successfully disconected from the server")
             break
 
         # encoding the data
         data = data.encode()
 
         # send the data to the server
-        client.sendto(data, ("192.168.1.1", 20230))
+        client.sendto(data, ("127.0.0.1", 20230))
         print("sent request to proxy")
 
 
@@ -59,43 +59,30 @@ if __name__ == "__main__":
             break
 
         else:
-            print("got ack")
+            print("got ack - for requesting the site")
 
 
 
         # we want to get the site from the proxy
-        data, addr = client.recvfrom(1024)
+        html_file, addr = client.recvfrom(1024)
 
-        if data.decode("utf-8") != 'example.com':
-            print("error")
-            break
+        fp = open("TheSite", "a")
 
-        else:
-            print("example.com")
+        fp.write(html_file.decode("utf-8"))
+
+        fp.close()
+
+        print("get the site from the proxy - example.com\n")
+
+
 
         # send ack
-        data = data.encode("utf-8")
-        client.sendto(data, ("192.168.1.1", 1030))
+        data = 'ack'
+        data = data.encode()
+        client.sendto(data, ("127.0.0.1", 20230))
+        print("sent ack for getting the site\n")
 
 
-
-
-
-
-
-
-
-
-
-        # receiving data from the server
-        data, addr = client.recvfrom(1024)
-
-        # decoding tha data
-        data = data.decode("utf-8")
-
-        # print the data we have got from the server
-        print("The new data: ", data)
-        print("\n")
 
     # close the socket
     client.close()
