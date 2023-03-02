@@ -25,7 +25,7 @@ def Connection_with_server_site():
     print("sent http request")
 
     http_response = proxy_tcp.recv(1024)
-    print(http_response.decode("utf-8"))
+    http_response = http_response.decode("utf-8")
     print("got http response")
 
     proxy_tcp.close()
@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
         # send the site to the client
         print("responding to client")
-        # resp = resp.encode()
+        resp = resp.encode()
         porxy_udp.sendto(resp, address)
 
 

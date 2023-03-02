@@ -2,6 +2,7 @@ import os
 import socket
 import stat
 import sys
+from webbrowser import open_new_tab
 
 #-----Magic Numbers------#
 proxy_sport = 20230
@@ -76,7 +77,12 @@ if __name__ == "__main__":
         # we want to get the site from the proxy
         html_file, addr = client.recvfrom(1024)
         fp = open("TheSite.html", "a")
-        fp.write(html_file.decode("utf-8"))
+        html_file = html_file.decode("utf-8")
+
+        start_index = html_file.find("<", 0, len(html_file))
+        html_file = html_file[start_index:len(html_file)]
+
+        fp.write(html_file)
         fp.close()
         print("get the site from the proxy - example.com\n")
 

@@ -23,12 +23,11 @@ if __name__ == "__main__":
 
     print("got http request\n")
 
-    http_response = b"HTTP/1.1 200 OK\r\nContent_Type: text/html\r\n\r\n<html><body>.....blablabla....</body></html>"
+    http_response = b"HTTP/1.1 200 OK\r\nContent_Type: text/html\r\n\r\n    <Html><Head><title>Example of make a text B,I,U</title></Head><Body><b> [This text is Bold......] </b><I> [This text is Italic......] </I><U> [This text is Underline......] </U></Body></Html>"
 
     ans_socket.sendall(http_response)
 
     print("sent http response\n")
-
 
     ans_socket.close()
     print("closed socket...\n")
