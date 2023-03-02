@@ -1,24 +1,50 @@
-
+import os
 import socket
-from random import randint
-import socket
-from time import sleep
+import stat
+import sys
 
-from numpy import character
-from scapy.all import *
-from scapy.layers import dhcp
-from scapy.layers.dhcp import DHCP, BOOTP
-from scapy.layers.dns import DNS
-from scapy.layers.http import HTTP, HTTPRequest
-from scapy.layers.inet import IP, UDP, TCP
-from scapy.layers.l2 import Ether, ARP
-import http3
+#-----Magic Numbers------#
+proxy_sport = 20230
+proxy_ip = '127.0.0.1'
+#------------------------#
 
-proxy_ip = '192.168.1.1'
+
+
+def check(data):
+    if data == "stop":
+        data = data.encode()
+        client.sendto(data, (proxy_ip, proxy_sport))
+        client.close()
+        print("---The client has successfully disconected from the server")
+        return
+
+
+
+def request(data):
+    data = data.encode()
+    client.sendto(data, (proxy_ip, proxy_sport))
+    print("sent request to proxy")
+
+
+
+def check_ack(data):
+    if data.decode("utf-8") != 'ack':
+        print("error")
+        return
+    else:
+        print("got ack - for requesting the site")
+
+
+
+def send_ack():
+    data = 'ack'
+    data = data.encode()
+    client.sendto(data, (proxy_ip, proxy_sport))
+    print("sent ack for getting the site\n")
+
 
 
 if __name__ == "__main__":
-    # client_request_packet()
 
     # using UDP protocol
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -32,55 +58,32 @@ if __name__ == "__main__":
         print("\n")
 
         #option for closing the socket
-        if data == "stop":
-            data = data.encode()
-            client.sendto(data, ("127.0.0.1", 20230))
-            client.close()
-            print("---The client has successfully disconected from the server")
-            break
-
-        # encoding the data
-        data = data.encode()
-
-        # send the data to the server
-        client.sendto(data, ("127.0.0.1", 20230))
-        print("sent request to proxy")
+        check(data)
 
 
-
-
+        #sending a requested site to the proxy
+        request(data)
 
 
         #we want to get ack from the proxy
         data, addr = client.recvfrom(1024)
 
-        if data.decode("utf-8") != 'ack':
-            print("error")
-            break
 
-        else:
-            print("got ack - for requesting the site")
-
+        #get ack for sending request
+        check_ack(data)
 
 
         # we want to get the site from the proxy
         html_file, addr = client.recvfrom(1024)
-
-        fp = open("TheSite", "a")
-
+        fp = open("TheSite.html", "a")
         fp.write(html_file.decode("utf-8"))
-
         fp.close()
-
         print("get the site from the proxy - example.com\n")
 
 
-
         # send ack
-        data = 'ack'
-        data = data.encode()
-        client.sendto(data, ("127.0.0.1", 20230))
-        print("sent ack for getting the site\n")
+        send_ack()
+
 
 
 
