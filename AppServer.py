@@ -23,7 +23,15 @@ if __name__ == "__main__":
 
     print("got http request\n")
 
-    http_response = b"HTTP/1.1 200 OK\r\nContent_Type: text/html\r\n\r\n    <Html><Head><title>Example of make a text B,I,U</title></Head><Body><b> [This text is Bold......] </b><I> [This text is Italic......] </I><U> [This text is Underline......] </U></Body></Html>"
+    fp = open("site.html", "r")
+
+    html_site = fp.read()
+
+    fp.close()
+
+    http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/html\r\n\r\n" + html_site
+
+    http_response = http_response.encode()
 
     ans_socket.sendall(http_response)
 
