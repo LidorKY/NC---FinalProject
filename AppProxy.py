@@ -7,7 +7,10 @@ proxy_sport = 20230
 proxy_ip = '127.0.0.1'
 server_site_sport = 80
 server_site = '127.0.0.1'
+server_files_sport = 80
+server_files = '127.0.0.1'
 #--------------------------#
+
 
 
 
@@ -56,6 +59,110 @@ def send_ack(address1):
     print("sent ack to client")
 
 
+
+def ask_file_1():
+    print("asking for file_1")
+    print("connecting to files server")
+    proxy_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    server_files_address = (server_files, 30714)  # need to change the port
+
+    proxy_tcp.connect(server_files_address)
+
+    http_request = b"GET /index.html HTTP/1.1\r\nHost: file_1"
+
+    proxy_tcp.sendall(http_request)
+    print("sent http request for file_2")
+
+    # getting the size of file_2
+    num = proxy_tcp.recv(1024)
+    num = num.decode("utf-8")
+    num = int(num)
+    temp = ''
+    file = ''
+
+    while num != len(file):
+        temp = proxy_tcp.recv(1024)
+        temp = temp.decode("utf-8")
+        temp = temp[len(temp) - num:len(temp)]
+        print(temp)
+        file += temp
+        print(len(file))
+
+    proxy_tcp.close()
+    print("closed tcp socket")
+    return file
+
+
+
+
+def ask_file_2():
+    print("asking for file_2")
+    print("connecting to files server")
+    proxy_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    server_files_address = (server_files, 30714)
+
+    proxy_tcp.connect(server_files_address)
+
+    http_request = b"GET /index.html HTTP/1.1\r\nHost: file_2"
+
+    proxy_tcp.sendall(http_request)
+    print("sent http request for file_2")
+
+    #getting the size of file_2
+    num = proxy_tcp.recv(1024)
+    num = num.decode("utf-8")
+    num = int(num)
+    temp = ''
+    file = ''
+
+    while num != len(file):
+        temp = proxy_tcp.recv(1024)
+        temp = temp.decode("utf-8")
+        temp = temp[len(temp)-num:len(temp)]
+        print(temp)
+        file += temp
+        print(len(file))
+
+
+    proxy_tcp.close()
+    print("closed tcp socket")
+    return file
+
+
+def ask_file_3():
+    print("asking for file_3")
+    print("connecting to files server")
+    proxy_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    server_files_address = (server_files, 30714) # need to change the port
+
+    proxy_tcp.connect(server_files_address)
+
+    http_request = b"GET /index.html HTTP/1.1\r\nHost: file_3"
+
+    proxy_tcp.sendall(http_request)
+    print("sent http request for file_2")
+
+    # getting the size of file_2
+    num = proxy_tcp.recv(1024)
+    num = num.decode("utf-8")
+    num = int(num)
+    temp = ''
+    file = ''
+
+    while num != len(file):
+        temp = proxy_tcp.recv(1024)
+        temp = temp.decode("utf-8")
+        temp = temp[len(temp) - num:len(temp)]
+        print(temp)
+        file += temp
+        print(len(file))
+
+    proxy_tcp.close()
+    print("closed tcp socket")
+    return file
 
 
 
@@ -111,9 +218,30 @@ if __name__ == "__main__":
 
 
 
+#---------------------#
+
+        # receiving which file the client wants
+        data, address = porxy_udp.recvfrom(1024)
+
+        data = data.decode("utf-8")
+
+        #need to send ack for getting request for a file
 
 
 
+        if data == "file_1":
+            file_1 = ask_file_1()
+        if data == "file_2":
+            file_2 = ask_file_2()
+        if data == "file_3":
+            file_3 = ask_file_3()
+        else:
+            print("error")
+
+
+        #need to send it to the client and get ack for it
+
+# ---------------------#
 
         print("finish!!!")
         break
