@@ -29,7 +29,6 @@ def file_1(ans_socket):
     print("sent file_1\n")
 
 
-
 def file_2(ans_scoket):
     print("in file 2")
     fp = open("2.txt", "r")
@@ -51,8 +50,6 @@ def file_2(ans_scoket):
     ans_socket.sendall(http_response)
 
     print("sent file_2\n")
-
-
 
 
 def file_3(ans_socket):
@@ -78,9 +75,6 @@ def file_3(ans_socket):
     print("sent file_3\n")
 
 
-
-
-
 if __name__ == "__main__":
 
     print("Hello I am the server that has the files\n")
@@ -91,38 +85,27 @@ if __name__ == "__main__":
 
     server_site_tcp.listen(1)
     print("listening...\n")
+    while True:
+        ans_socket, ans_addr = server_site_tcp.accept()
+        request = ans_socket.recv(1024).decode()
+        print("got http request\n")
+        if request == "stop":
+            print("goodbye")
+            break
 
-    ans_socket, ans_addr = server_site_tcp.accept()
+        start_index = request.find("f", 0, len(request))
+        request = request[start_index:len(request)]
 
-    # while True:
-
-    request = ans_socket.recv(1024).decode()
-    print("got http request\n")
-
-    start_index = request.find("f", 0, len(request))
-    request = request[start_index:len(request)]
-
-    #need to add a loop for the if
-
-    if request == "file_1":
-        file_1(ans_socket)
-    elif request == "file_2":
-        file_2(ans_socket)
-    elif request == "file_3":
-        file_3(ans_socket)
-    else:
-        print("error")
-        # break
-
-
-
+        if request == "file_1":
+            file_1(ans_socket)
+        elif request == "file_2":
+            file_2(ans_socket)
+        elif request == "file_3":
+            file_3(ans_socket)
+        else:
+            print("error")
+            break
 
     ans_socket.close()
     print("closed socket...\n")
     print("finished!!!")
-
-
-
-
-
-

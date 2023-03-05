@@ -4,8 +4,6 @@ server_site_sport = 80
 
 server_site = '127.0.0.1'
 
-
-
 if __name__ == "__main__":
 
     print("Hello I am the server that has the site\n")
@@ -19,30 +17,33 @@ if __name__ == "__main__":
 
     ans_socket, ans_addr = server_site_tcp.accept()
 
-    request = ans_socket.recv(1024).decode()
+    while True:
+        request = ans_socket.recv(1024).decode()
 
-    print("got http request\n")
+        if request == "":
+            continue
 
-    fp = open("site.html", "r")
+        elif request == "stop":
+            print("goodbye")
+            break
+        else:
+            print("got http request\n")
+            print("we got" + request)
 
-    html_site = fp.read()
+            fp = open("site.html", "r")
 
-    fp.close()
+            html_site = fp.read()
 
-    http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/html\r\n\r\n" + html_site
+            fp.close()
 
-    http_response = http_response.encode()
+            http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/html\r\n\r\n" + html_site
 
-    ans_socket.sendall(http_response)
+            http_response = http_response.encode()
 
-    print("sent http response\n")
+            ans_socket.sendall(http_response)
+
+            print("sent http response\n")
 
     ans_socket.close()
     print("closed socket...\n")
     print("finished!!!")
-
-
-
-
-
-

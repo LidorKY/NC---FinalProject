@@ -1,25 +1,11 @@
-import os
 import socket
-import stat
-import sys
-from webbrowser import open_new_tab
+import pickle
 
-#-----Magic Numbers------#
+
+# -----Magic Numbers------#
 proxy_sport = 20230
 proxy_ip = '127.0.0.1'
-#------------------------#
-
-
-
-def check(data):
-    if data == "stop":
-        data = data.encode()
-        client.sendto(data, (proxy_ip, proxy_sport))
-        client.close()
-        print("---The client has successfully disconected from the server")
-        return
-
-
+# ------------------------#
 
 def request(data):
     data = data.encode()
@@ -27,52 +13,50 @@ def request(data):
     print("sent request to proxy")
 
 
-
-def check_ack(data):
+def check_ack(data, str):
     if data.decode("utf-8") != 'ack':
         print("error")
         return
     else:
-        print("got ack - for requesting the site")
+        print("got ack - " + str)
 
 
-
-def send_ack():
+def send_ack(str):
     data = 'ack'
     data = data.encode()
     client.sendto(data, (proxy_ip, proxy_sport))
-    print("sent ack for getting the site\n")
-
+    print("sent ack for " + str)
 
 
 if __name__ == "__main__":
 
-    # using UDP protocol
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     # the loop for receiving and sending the data
     print("hello I am the client\n")
+    loop_num = 0
     while True:
+        loop_num = loop_num + 1
 
         # receiving data from user
         data = input("pls enter a site you want to get: ")
         print("\n")
 
-        #option for closing the socket
-        check(data)
+        # option for closing the socket
+        if data == "stop":
+            data = data.encode()
+            client.sendto(data, (proxy_ip, proxy_sport))
+            print("---The client has successfully disconnected from the server")
+            break
 
-
-        #sending a requested site to the proxy
+        # sending a requested site to the proxy
         request(data)
 
-
-        #we want to get ack from the proxy
+        # we want to get ack from the proxy
         data, addr = client.recvfrom(1024)
 
-
-        #get ack for sending request
-        check_ack(data)
-
+        # get ack for sending request
+        check_ack(data, "for getting the site")
 
         # we want to get the site from the proxy
         html_file, addr = client.recvfrom(1024)
@@ -84,17 +68,61 @@ if __name__ == "__main__":
 
         fp.write(html_file)
         fp.close()
-        print("get the site from the proxy - example.com\n")
-
+        print("got the site from the proxy - example.com\n")
 
         # send ack
-        send_ack()
+        send_ack("for getting the site")
+
+        # here we want to choose what file we want
+        file_name = input("What file do you want")
+        file_num = file_name[len(file_name) - 1:len(file_name)]
+        print(file_num)
+        print("requesting " + file_name)
+        file_name = file_name.encode()
+        client.sendto(file_name, (proxy_ip, proxy_sport))
+
+        # receiving ack from proxy
+        data, addr = client.recvfrom(1024)
+        check_ack(data, "for requesting the file")
 
 
 
+        file_txt = open("file_" + file_num + ".txt", "a+")
+        file_size, addr = client.recvfrom(1024)
+        file_size = int.from_bytes(file_size, "big")
+        client.settimeout(3)
+        packet_sequence = []
+        current_ack = 1
+        window_size = 1
+        tmp = 0
+        Flag = 1
+        current_file_size = 0
+        while file_size > current_file_size:
+            while window_size > tmp:
+                tmp += 1
+                try:
+                    file, addr = client.recvfrom(1024)
+                    file = pickle.loads(file)
+                    window_size = file[2]
+                    # tmp += 1
+                    if not packet_sequence.__contains__(file[0]) and current_ack == file[0]:
+                        current_ack += 1
+                        packet_sequence.append(file[0])
+                        file_txt.write(file[1])
+                        current_file_size += len(file[1])
+                except:
+                    print("timeout")
+
+
+            tmp = 0
+            while Flag < current_ack:
+                send_ack("for packet " + str(Flag))
+                Flag += 1
+
+            print("the size is: " + str(current_file_size))
+
+        file_txt.close()
 
     # close the socket
     client.close()
     print("---Successfully closed the socket")
-
-
