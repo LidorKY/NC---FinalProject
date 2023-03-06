@@ -1,5 +1,8 @@
+import os.path
 import pickle
 from socket import *
+from time import sleep
+
 from scapy.all import *
 import numpy
 
@@ -52,29 +55,28 @@ def ask_file(proxy_tcp, index):
 
     http_request = "GET /index.html HTTP/1.1\r\nHost: file_" + index
     http_request = http_request.encode()
-
     proxy_tcp.sendall(http_request)
     print("sent http request for file_" + index)
 
-    # getting the size of file_
-    size_of_file = proxy_tcp.recv(1024)
-    size_of_file = size_of_file.decode("utf-8")
-    size_of_file = int(size_of_file)
-    file = ''
+    # # getting the size of file_
+    # size_of_file = proxy_tcp.recv(1024)
+    # size_of_file = size_of_file.decode("utf-8")
+    # size_of_file = int(size_of_file)
+    # file = ''
 
     temp = proxy_tcp.recv(1024)
     temp = temp.decode("utf-8")
-    temp = temp[len(temp) - size_of_file:len(temp)]
-    file += temp
-
-    while size_of_file != len(file):
-        temp = proxy_tcp.recv(1024)
-        temp = temp.decode("utf-8")
-        file += temp
+    temp = temp[len(temp) - 5:len(temp)]
+    # file += temp
+    #
+    # while size_of_file != len(file):
+    #     temp = proxy_tcp.recv(1024)
+    #     temp = temp.decode("utf-8")
+    #     file += temp
 
     proxy_tcp.close()
     print("closed tcp socket")
-    return file
+    return temp
 
 
 def send_fin_tcp(_socket):
@@ -176,15 +178,18 @@ if __name__ == "__main__":
             continue
 
         print("sending " + data + " to client")
-
         # CC!!!!!!!!!!!!!!!!!
-        temp = len(file).to_bytes(32, 'big')
+        size = os.path.getsize(file)
+        temp = size.to_bytes(32, 'big')
         proxy_udp.sendto(temp, address)  # sending the size of file
-        packets_amount = len(file) / 1024
+
+        fp = open(file, "r")
+
+        packets_amount = int(size / 1024) + 1
         packets = []
-        for i in range(0, int(packets_amount)+1):  # splitting the file into packet size chunks
-            chunk_of_file = file[i * 1024: 1024 + 1024 * i]
-            tmp = [i+1, chunk_of_file, 0]
+        for i in range(0, packets_amount):  # splitting the file into packet size chunks
+            chunk_of_file = fp.read(1024)
+            tmp = str(i+1) + "$" + chunk_of_file
             packets.append(tmp)
 
         index = 0
@@ -192,15 +197,16 @@ if __name__ == "__main__":
         current_ack = 1
         suppose_to_ack = 1
         tmp = 0
-        proxy_udp.settimeout(3)
+        proxy_udp.settimeout(5)
         while index < packets_amount:  # The CC
             tmp = 0
             while window_size > tmp and index < packets_amount:
-                packets[index][2] = window_size
-                to_send = pickle.dumps(packets[index])
+                print("window size in sending" + str(window_size))
+                packets[index] = str(window_size) + "&" + packets[index]
+                to_send = packets[index].encode()
                 index += 1
+                sleep(1)
                 proxy_udp.sendto(to_send, address)
-                time.sleep(1)
                 suppose_to_ack += 1
                 tmp += 1
 
@@ -208,19 +214,33 @@ if __name__ == "__main__":
             while window_size > tmp and index < packets_amount:
                 ack_sequence, address = proxy_udp.recvfrom(1024)
                 ack_sequence = ack_sequence.decode("utf-8")
-                if current_ack != ack_sequence[len(ack_sequence) - 1:len(ack_sequence)]:
+                print(current_ack)
+                print(ack_sequence[len(ack_sequence) - 1:len(ack_sequence)])
+                print(current_ack != int(ack_sequence[len(ack_sequence) - 1:len(ack_sequence)]))
+                if current_ack != int(ack_sequence[len(ack_sequence) - 1:len(ack_sequence)]):
+                    tmp += 1
+                    print("here2")
                     continue
                 else:
+                    tmp += 1
                     current_ack += 1
+                    print("increased temp" + str(tmp))
+                    print("innn else")
 
                 tmp += 1
+                print("increased temp " + str(tmp))
+
+
             if suppose_to_ack != current_ack:
                 window_size = 1
                 index = current_ack
 
             else:
+
                 window_size *= 2
                 index = current_ack
+                print("increased window size  " + str(window_size))
+
 
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

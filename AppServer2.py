@@ -7,45 +7,66 @@ server_files = '127.0.0.1'
 
 
 def file_1(ans_socket):
+    # print("in file 1")
+    # fp = open("1.txt", "r")
+    #
+    # txt = fp.read()
+    #
+    # fp.close()
+    #
+    # size = str(len(txt))
+    #
+    # ans_socket.send(size.encode())
+    #
+    # http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/txt\r\n\r\n" + txt
+    #
+    # http_response = http_response.encode()
+    #
+    # sleep(1)
+    #
+    # ans_socket.sendall(http_response)
+    #
+    # print("sent file_1\n")
+
     print("in file 1")
-    fp = open("1.txt", "r")
 
-    txt = fp.read()
-
-    fp.close()
-
-    size = str(len(txt))
-
-    ans_socket.send(size.encode())
-
-    http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/txt\r\n\r\n" + txt
+    http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/txt\r\n\r\n 1.txt"
 
     http_response = http_response.encode()
-
-    sleep(1)
 
     ans_socket.sendall(http_response)
 
     print("sent file_1\n")
 
 
+
 def file_2(ans_scoket):
+    # print("in file 2")
+    # fp = open("2.txt", "r")
+    #
+    # txt = fp.read()
+    #
+    # fp.close()
+    #
+    # size = str(len(txt))
+    #
+    # ans_socket.send(size.encode())
+    #
+    # http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/txt\r\n\r\n" + txt
+    #
+    # http_response = http_response.encode()
+    #
+    # sleep(1)
+    #
+    # ans_socket.sendall(http_response)
+    #
+    # print("sent file_2\n")
+
     print("in file 2")
-    fp = open("2.txt", "r")
 
-    txt = fp.read()
-
-    fp.close()
-
-    size = str(len(txt))
-
-    ans_socket.send(size.encode())
-
-    http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/txt\r\n\r\n" + txt
+    http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/txt\r\n\r\n 2.txt"
 
     http_response = http_response.encode()
-
-    sleep(1)
 
     ans_socket.sendall(http_response)
 

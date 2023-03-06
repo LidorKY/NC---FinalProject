@@ -1,6 +1,6 @@
 import socket
 import pickle
-
+from time import sleep
 
 # -----Magic Numbers------#
 proxy_sport = 20230
@@ -79,6 +79,7 @@ if __name__ == "__main__":
         print(file_num)
         print("requesting " + file_name)
         file_name = file_name.encode()
+        sleep(1)
         client.sendto(file_name, (proxy_ip, proxy_sport))
 
         # receiving ack from proxy
@@ -90,33 +91,39 @@ if __name__ == "__main__":
         file_txt = open("file_" + file_num + ".txt", "a+")
         file_size, addr = client.recvfrom(1024)
         file_size = int.from_bytes(file_size, "big")
-        client.settimeout(3)
-        packet_sequence = []
+        # client.settimeout(3)
+        packet_sequence = [0]
         current_ack = 1
         window_size = 1
         tmp = 0
         Flag = 1
         current_file_size = 0
         while file_size > current_file_size:
-            while window_size > tmp:
+            while int(window_size) > tmp:
                 tmp += 1
-                try:
-                    file, addr = client.recvfrom(1024)
-                    file = pickle.loads(file)
-                    window_size = file[2]
-                    # tmp += 1
-                    if not packet_sequence.__contains__(file[0]) and current_ack == file[0]:
-                        current_ack += 1
-                        packet_sequence.append(file[0])
-                        file_txt.write(file[1])
-                        current_file_size += len(file[1])
-                except:
-                    print("timeout")
+                # try:
+                file, addr = client.recvfrom(1024)
+                file = file.decode("utf-8")
+                file = file.split("&")
+                window_size = file[0]
+                print(window_size)
+                file[1] = file[1].split("$")
+                if (not packet_sequence.__contains__(int(file[1][0]))) and current_ack == int(file[1][0]):
+                    current_ack += 1
+                    packet_sequence.append(int(file[1][0]))
+                    file_txt.write(file[1][1])
+                    current_file_size += len(file[1][1])
+                # except:
+                #     print("timeout")
 
 
             tmp = 0
             while Flag < current_ack:
-                send_ack("for packet " + str(Flag))
+                sleep(1)
+                data = "packet " + str(Flag)
+                data = data.encode()
+                client.sendto(data, (proxy_ip, proxy_sport))
+                print("sent ack for " + data.decode("utf-8"))
                 Flag += 1
 
             print("the size is: " + str(current_file_size))

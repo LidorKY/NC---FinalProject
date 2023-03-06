@@ -39,7 +39,7 @@ def srever_cache(que_packet):
 
         # -----------------IP Layer---------------#
         ip = IP()
-        ip.src = '192.168.0.5'
+        ip.src = '10.0.2.5'
         ip.dst = que_packet[0][1].src
         # ----------------------------------------#
 
@@ -83,7 +83,7 @@ def srever_cache(que_packet):
 def response_packet(que_packet):
     # -----------------IP Layer---------------#
     ip = IP()
-    ip.src = '192.168.0.5'
+    ip.src = '10.0.2.5'
     ip.dst = que_packet[0][1].src
     # ----------------------------------------#
 

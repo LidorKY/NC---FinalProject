@@ -34,7 +34,7 @@ def client_connection():
 def discover_packet():
     #------------Ethernet Layer--------------#
     ether = Ether()
-    ether.dst = "ff:ff:ff:ff:ff:ff" #can also use RandMAC() function
+    ether.dst = "ff:ff:ff:ff:ff:ff"
     #ether.show()
     # ---------------------------------------#
 
@@ -55,7 +55,7 @@ def discover_packet():
     # -----------------------------------------#
 
 
-    # ------------Didn't fully understand this Layer--------------#
+    # ------------Bootp Layer--------------#
     bootp = BOOTP()
     bootp.xid = random.randint(1, pow(2, 32)-1)
     bootp.flags = 1
@@ -63,9 +63,8 @@ def discover_packet():
     # bootp.yiaddr =
     bootp.siaddr = "10.0.2.15"
     # bootp.giaddr =
-
     # udp.show()
-    # ------------------------------------------------------------#
+    # ---------------------------------------#
 
 
     # ------------Application Layer--------------#
@@ -108,17 +107,17 @@ def request_packet(off_packet):
     # -----------------------------------------#
 
 
-    # ------------Didn't fully understand this Layer--------------#
+    # ------------Bootp Layer--------------#
     bootp = BOOTP()
     bootp.xid = off_packet[0][3].xid
     bootp.flags = 1
     # bootp.ciaddr = ip.src
     # bootp.yiaddr =
-    # bootp.siaddr = "10.0.2.15"
+    bootp.siaddr = "10.0.2.15"
     # bootp.giaddr =
     # bootp.chaddr = "00:11:22:33:44:55"
     # udp.show()
-    # ------------------------------------------------------------#
+    # ---------------------------------------#
 
 
     # ------------Application Layer--------------#

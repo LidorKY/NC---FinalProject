@@ -48,7 +48,7 @@ def offer_packet(disco_packet, arr):
 
     # ------------IP Layer--------------#
     ip = IP()
-    ip.src = '192.168.1.1'
+    ip.src = '10.0.2.19'
     ip.dst = '255.255.255.255'
     # ip.show()
     # -----------------------------------#
@@ -62,7 +62,7 @@ def offer_packet(disco_packet, arr):
     # -----------------------------------------#
 
 
-    # ------------Didn't fully understand this Layer--------------#
+    # ------------Bootp Layer--------------#
     bootp = BOOTP()
     bootp.xid = disco_packet[0][3].xid
     bootp.flags = 2
@@ -98,7 +98,7 @@ def ack_packet(req_packet):
 
     # ------------IP Layer--------------#
     ip = IP()
-    ip.src = '192.168.1.1'
+    ip.src = '10.0.2.19'
     ip.dst = '255.255.255.255'
     # ip.show()
     # -----------------------------------#
@@ -112,13 +112,13 @@ def ack_packet(req_packet):
     # -----------------------------------------#
 
 
-    # ------------Didn't fully understand this Layer--------------#
+    # ------------Bootp Layer--------------#
     bootp = BOOTP()
     bootp.xid = req_packet[0][3].xid
     bootp.flags = 2
     bootp.sname = "I am the DHCP server"
     # udp.show()
-    # ------------------------------------------------------------#
+    # --------------------------------------#
 
 
     # ------------Application Layer--------------#
@@ -139,7 +139,7 @@ def ack_packet(req_packet):
 def ip_List():
     ip_list = []
     for x in range(20, 201):
-        ip_list.append("192.168.1." + str(x))
+        ip_list.append("10.0.2." + str(x))
     return ip_list
 
 
