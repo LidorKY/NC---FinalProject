@@ -36,20 +36,17 @@ def server_connection():
 
 def srever_cache(que_packet):
     if que_packet[0][3].qd.qname in my_dictionary:
-
         # -----------------IP Layer---------------#
         ip = IP()
         ip.src = '10.0.2.5'
         ip.dst = que_packet[0][1].src
         # ----------------------------------------#
 
-
         # -----------------Transport Layer---------------#
         udp = UDP()
         udp.sport = que_packet[0][2].dport
         udp.dport = que_packet[0][2].sport
         # -----------------------------------------------#
-
 
         # -----------------Application Layer---------------#
         dns = DNS()
@@ -63,19 +60,13 @@ def srever_cache(que_packet):
         dns.an.rdata = my_dictionary[que_packet[0][3].qd.qname]
         # ------------------------------------------------#
 
-
         # -----------------The Complete Packet---------------#
         dns_response = ip / udp / dns
-        # dns_response = dns_response.__class__(bytes(dns_response))
         # ---------------------------------------------------#
-
-
         send(dns_response)
-
         return True
 
     else:
-
         return False
 
 
@@ -87,13 +78,11 @@ def response_packet(que_packet):
     ip.dst = que_packet[0][1].src
     # ----------------------------------------#
 
-
     # -----------------Transport Layer---------------#
     udp = UDP()
     udp.sport = que_packet[0][2].dport
     udp.dport = que_packet[0][2].sport
     # -----------------------------------------------#
-
 
     # -----------------Application Layer---------------#
     dns = DNS()
@@ -108,13 +97,9 @@ def response_packet(que_packet):
     my_dictionary[que_packet[0][3].qd.qname] = dns.an.rdata
     # ------------------------------------------------#
 
-
     # -----------------The Complete Packet---------------#
     dns_response = ip / udp / dns
-    # dns_response = dns_response.__class__(bytes(dns_response))
     # ---------------------------------------------------#
-
-
     send(dns_response)
 
 

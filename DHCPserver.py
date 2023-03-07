@@ -40,27 +40,20 @@ def server_connection():
 def offer_packet(disco_packet, arr):
     # ------------Ethernet Layer--------------#
     ether = Ether()
-    # ether.src = "08:00:27:d3:c1:00"
     ether.dst = "ff:ff:ff:ff:ff:ff"
-    # ether.show()
     # ----------------------------------------#
-
 
     # ------------IP Layer--------------#
     ip = IP()
     ip.src = '10.0.2.19'
     ip.dst = '255.255.255.255'
-    # ip.show()
     # -----------------------------------#
-
 
     # ------------Transport Layer--------------#
     udp = UDP()
     udp.sport = 68
     udp.dport = 67
-    # udp.show()
     # -----------------------------------------#
-
 
     # ------------Bootp Layer--------------#
     bootp = BOOTP()
@@ -69,69 +62,50 @@ def offer_packet(disco_packet, arr):
     bootp.yiaddr = arr[0]
     arr.pop(0)
     bootp.sname = "I am the DHCP server"
-    # udp.show()
     # ------------------------------------------------------------#
-
 
     # ------------Application Layer--------------#
     dhcp = DHCP(options=[("message-type", "offer"), "end"])
-    # dhcp.show()
     # -------------------------------------------#
-
 
     # ------------The Complete Packet--------------#
     dhcp_offer = ether / ip / udp / bootp / dhcp
-    # dhcp_offer.show()
     # ---------------------------------------------#
-
-
     sendp(dhcp_offer)
+
 
 def ack_packet(req_packet):
     # ------------Ethernet Layer--------------#
     ether = Ether()
-    # ether.src = "08:00:27:d3:c1:00"
     ether.dst = "ff:ff:ff:ff:ff:ff"
-    # ether.show()
     # ----------------------------------------#
-
 
     # ------------IP Layer--------------#
     ip = IP()
     ip.src = '10.0.2.19'
     ip.dst = '255.255.255.255'
-    # ip.show()
     # -----------------------------------#
-
 
     # ------------Transport Layer--------------#
     udp = UDP()
     udp.sport = 68
     udp.dport = 67
-    # udp.show()
     # -----------------------------------------#
-
 
     # ------------Bootp Layer--------------#
     bootp = BOOTP()
     bootp.xid = req_packet[0][3].xid
     bootp.flags = 2
     bootp.sname = "I am the DHCP server"
-    # udp.show()
     # --------------------------------------#
-
 
     # ------------Application Layer--------------#
     dhcp = DHCP(options=[("message-type", "ack"), "end"])
-    # dhcp.show()
     # -------------------------------------------#
-
 
     # ------------The Complete Packet--------------#
     dhcp_ack = ether / ip / udp / bootp / dhcp
-    # dhcp_offer.show()
     # ---------------------------------------------#
-
     sendp(dhcp_ack)
 
 
