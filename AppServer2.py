@@ -1,99 +1,30 @@
 import socket
 from time import sleep
 
-server_files_sport = 80
+server_objects_sport = 7104
+server_objects = '127.0.0.1'
+server_objects_address = (server_objects, server_objects_sport)
 
-server_files = '127.0.0.1'
 
-
-def file_1(ans_socket):
-    # print("in file 1")
-    # fp = open("1.txt", "r")
-    #
-    # txt = fp.read()
-    #
-    # fp.close()
-    #
-    # size = str(len(txt))
-    #
-    # ans_socket.send(size.encode())
-    #
-    # http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/txt\r\n\r\n" + txt
-    #
-    # http_response = http_response.encode()
-    #
-    # sleep(1)
-    #
-    # ans_socket.sendall(http_response)
-    #
-    # print("sent file_1\n")
-
-    print("in file 1")
-
-    http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/txt\r\n\r\n 1.txt"
-
-    http_response = http_response.encode()
-
-    ans_socket.sendall(http_response)
-
-    print("sent file_1\n")
+def image_1(ans_socket):
+    print("sending image number 1")
+    http_response = b"HTTP/1.1 200 OK\r\nContent-Type: image/jpg\r\n\r\nimage1.jpg"
+    ans_socket.send(http_response)
 
 
 
-def file_2(ans_scoket):
-    # print("in file 2")
-    # fp = open("2.txt", "r")
-    #
-    # txt = fp.read()
-    #
-    # fp.close()
-    #
-    # size = str(len(txt))
-    #
-    # ans_socket.send(size.encode())
-    #
-    # http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/txt\r\n\r\n" + txt
-    #
-    # http_response = http_response.encode()
-    #
-    # sleep(1)
-    #
-    # ans_socket.sendall(http_response)
-    #
-    # print("sent file_2\n")
-
-    print("in file 2")
-
-    http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/txt\r\n\r\n 2.txt"
-
-    http_response = http_response.encode()
-
-    ans_socket.sendall(http_response)
-
-    print("sent file_2\n")
+def image_2(ans_socket):
+    print("sending image number 2")
+    http_response = b"HTTP/1.1 200 OK\r\nContent-Type: image/jpeg\r\n\r\nimage2.jpeg"
+    ans_socket.send(http_response)
 
 
-def file_3(ans_socket):
-    print("in file 3")
-    fp = open("3.txt", "r")
 
-    txt = fp.read()
+def image_3(ans_socket):
+    print("sending image number 3")
+    http_response = b"HTTP/1.1 200 OK\r\nContent-Type: image/jpeg\r\n\r\nimage3.jpeg"
+    ans_socket.send(http_response)
 
-    fp.close()
-
-    size = str(len(txt))
-
-    ans_socket.send(size.encode())
-
-    http_response = "HTTP/1.1 200 OK\r\nContent_Type: text/txt\r\n\r\n" + txt
-
-    http_response = http_response.encode()
-
-    sleep(1)
-
-    ans_socket.sendall(http_response)
-
-    print("sent file_3\n")
 
 
 if __name__ == "__main__":
@@ -102,31 +33,31 @@ if __name__ == "__main__":
 
     server_site_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    server_site_tcp.bind((server_files, 30714))
+    server_site_tcp.bind(server_objects_address)
 
     server_site_tcp.listen(1)
     print("listening...\n")
     while True:
         ans_socket, ans_addr = server_site_tcp.accept()
-        request = ans_socket.recv(1024).decode()
-        print("got http request\n")
+        request = ans_socket.recv(8192).decode("utf-8")
+
+        # temp = request.find("image1.jpg")
+        print("got http request: \n")
+
+
         if request == "stop":
             print("goodbye")
             break
 
-        start_index = request.find("f", 0, len(request))
-        request = request[start_index:len(request)]
-
-        if request == "file_1":
-            file_1(ans_socket)
-        elif request == "file_2":
-            file_2(ans_socket)
-        elif request == "file_3":
-            file_3(ans_socket)
+        if "image1.jpg" in request:
+            image_1(ans_socket)
+        elif "image2.jpeg" in request:
+            image_2(ans_socket)
+        elif "image3.jpeg" in request:
+            image_3(ans_socket)
         else:
             print("error")
-            break
 
-    ans_socket.close()
-    print("closed socket...\n")
-    print("finished!!!")
+
+        ans_socket.close()
+        print("closed socket...\n")

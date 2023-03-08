@@ -37,12 +37,12 @@ if __name__ == "__main__":
                         b"</Head>" \
                         b"<Body>" \
                         b"<h1> <p>hello dear user and welcome to our site</p> </h1>" \
-                        b"<a href= image1.jpg>" \
+                        b"<a href= first_image.jpg>" \
                         b"<p><b>if you want to get the file 'image1.jpg' press here </b></p>" \
-                        b"<a href= 2.txt>" \
-                        b"<p><b>if you want to get the file '2.txt' press here </b></p>" \
-                        b"<a href= 3.txt>" \
-                        b"<p><b>if you want to get the file '3.txt' press here </b></p>" \
+                        b"<a href= second_image.jpeg>" \
+                        b"<p><b>if you want to get the file 'image2.jpeg' press here </b></p>" \
+                        b"<a href= third_image.jpeg>" \
+                        b"<p><b>if you want to get the file 'image3.jpeg' press here </b></p>" \
                         b"</Body>" \
                         b"</Html>"
         ans_socket.send(http_response)
