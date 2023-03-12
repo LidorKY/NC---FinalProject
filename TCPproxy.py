@@ -80,12 +80,12 @@ if __name__ == "__main__":
         if "image1.jpg" in http_response:
             print("the object is: image1.jpg")
             temp = "image1.jpg"
-        elif "image2.jpeg" in http_response:
-            print("the object is: image2.jpeg")
-            temp = "image2.jpeg"
-        elif "image3.jpeg" in http_response:
-            print("the object is: image3.jpeg")
-            temp = "image3.jpeg"
+        elif "image2.jpg" in http_response:
+            print("the object is: image2.jpg")
+            temp = "image2.jpg"
+        elif "image3.jpg" in http_response:
+            print("the object is: image3.jpg")
+            temp = "image3.jpg"
         else:
             print("error")
             temp = "error"
@@ -113,30 +113,3 @@ if __name__ == "__main__":
 
     proxy_main_socket.close()
     print("finish")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

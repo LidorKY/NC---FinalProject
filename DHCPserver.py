@@ -120,10 +120,3 @@ def ip_List():
 
 if __name__ == "__main__":
     server_connection()
-
-
-
-
-
-
-

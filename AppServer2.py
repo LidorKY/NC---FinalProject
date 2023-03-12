@@ -12,7 +12,7 @@ server_objects_address = (server_objects_ip, server_objects_sport)
 def image_1(ans_socket):
     #----send http response----#
     print("sending image number 1")
-    http_response = b"HTTP/1.1 200 OK\r\nContent-Type: image/jpg\r\n\r\nimage1.jpg"
+    http_response = b"HTTP/1.1 200 OK\r\nContent-Type: image/jpeg\r\n\r\nimage1.jpeg"
     ans_socket.send(http_response)
     #--------------------------#
 
@@ -20,14 +20,14 @@ def image_1(ans_socket):
 
 def image_2(ans_socket):
     print("sending image number 2")
-    http_response = b"HTTP/1.1 200 OK\r\nContent-Type: image/jpeg\r\n\r\nimage2.jpeg"
+    http_response = b"HTTP/1.1 200 OK\r\nContent-Type: image/jpg\r\n\r\nimage2.jpg"
     ans_socket.send(http_response)
 
 
 
 def image_3(ans_socket):
     print("sending image number 3")
-    http_response = b"HTTP/1.1 200 OK\r\nContent-Type: image/jpeg\r\n\r\nimage3.jpeg"
+    http_response = b"HTTP/1.1 200 OK\r\nContent-Type: image/jpg\r\n\r\nimage3.jpg"
     ans_socket.send(http_response)
 
 
@@ -46,9 +46,9 @@ if __name__ == "__main__":
 
         if "image1.jpg" in request:
             image_1(ans_socket)
-        elif "image2.jpeg" in request:
+        elif "image2.jpg" in request:
             image_2(ans_socket)
-        elif "image3.jpeg" in request:
+        elif "image3.jpg" in request:
             image_3(ans_socket)
         else:
             print("error")

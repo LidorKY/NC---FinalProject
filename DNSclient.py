@@ -51,4 +51,3 @@ def query_packet():
 
 if __name__ == "__main__":
     client_connection()
-

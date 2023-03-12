@@ -72,7 +72,7 @@ def ask_image_1(sock):
 
 def ask_image_2(sock):
     print("\n")
-    http_request = b"GET /index.jpg HTTP/1.1\r\nHost: image2.jpeg\r\n\r\n"
+    http_request = b"GET /index.jpg HTTP/1.1\r\nHost: image2.jpg\r\n\r\n"
     sock.send(http_request)
     print("the client sent the http request for the object")
     size_of_image = sock.recv(8192)
@@ -80,7 +80,7 @@ def ask_image_2(sock):
     print("the client received the size of the image: " + str(size_of_image))
 
     current_size = 0
-    fp = open("second_image.jpeg", "ab")
+    fp = open("second_image.jpg", "ab")
     while current_size < size_of_image:
         temp = sock.recv(8192)
         fp.write(temp)
@@ -93,7 +93,7 @@ def ask_image_2(sock):
 
 def ask_image_3(sock):
     print("\n")
-    http_request = b"GET /index.jpg HTTP/1.1\r\nHost: image3.jpeg\r\n\r\n"
+    http_request = b"GET /index.jpg HTTP/1.1\r\nHost: image3.jpg\r\n\r\n"
     sock.send(http_request)
     print("the client sent the http request for the object")
     size_of_image = sock.recv(8192)
@@ -101,7 +101,7 @@ def ask_image_3(sock):
     print("the client received the size of the image: " + str(size_of_image))
 
     current_size = 0
-    fp = open("third_image.jpeg", "ab")
+    fp = open("third_image.jpg", "ab")
     while current_size < size_of_image:
         temp = sock.recv(8192)
         fp.write(temp)
@@ -136,6 +136,3 @@ if __name__ == "__main__":
             client_socket1.close()
             print("closed the client's socket")
             break
-
-
-

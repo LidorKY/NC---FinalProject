@@ -36,7 +36,7 @@ if __name__ == "__main__":
                         b"<style>" \
                         b"body" \
                         b"{" \
-                        b"background-image: url('main.jpg');" \
+                        b"background-image: url('main.jpeg');" \
                         b"background-repeat: no-repeat;" \
                         b"background-attachment: fixed;" \
                         b"background-size: cover;" \
@@ -45,10 +45,10 @@ if __name__ == "__main__":
                         b"<h1> <p>hello dear user and welcome to our site</p> </h1>" \
                         b"<a href= first_image.jpg>" \
                         b"<p><b>if you want to get the file 'image1.jpg' press here </b></p>" \
-                        b"<a href= second_image.jpeg>" \
-                        b"<p><b>if you want to get the file 'image2.jpeg' press here </b></p>" \
-                        b"<a href= third_image.jpeg>" \
-                        b"<p><b>if you want to get the file 'image3.jpeg' press here </b></p>" \
+                        b"<a href= second_image.jpg>" \
+                        b"<p><b>if you want to get the file 'image2.jpg' press here </b></p>" \
+                        b"<a href= third_image.jpg>" \
+                        b"<p><b>if you want to get the file 'image3.jpg' press here </b></p>" \
                         b"</Body>" \
                         b"</Html>"
         ans_socket.send(http_response)
