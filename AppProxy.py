@@ -86,11 +86,10 @@ if __name__ == "__main__":
 
 
 
-    # while True:
     #----requesting objects from the objects server----#
     print("connecting to files server")
     proxy_tcp_files = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_files_address = (server_objects, server_objects_sport)  # need to change the port
+    server_files_address = (server_objects, server_objects_sport)
     proxy_tcp_files.connect(server_files_address)
 
 
@@ -99,7 +98,6 @@ if __name__ == "__main__":
         data, address = proxy_udp.recvfrom(1024)
         data = data.decode("utf-8")
         print("got the request for object from the client")
-
         # need to send ack for getting request for a file
         send_ack(address)
         print("chosen object is " + data)
@@ -121,7 +119,6 @@ if __name__ == "__main__":
 
 
         print("sending " + data + " to client")
-        # CC!!!!!!!!!!!!!!!!!
         size = os.path.getsize(data)
         temp = size.to_bytes(32, 'big')
         proxy_udp.sendto(temp, address)  # sending the size of file
@@ -147,7 +144,6 @@ if __name__ == "__main__":
         print("received ack for sending the object")
         # ---------------------------------------------#
 
-    proxy_udp.close()
 
 
 
@@ -225,5 +221,5 @@ if __name__ == "__main__":
 #     print("finish " + counter.__str__() + " task")
 
     # close the socket
-    # proxy_udp.close()
+    proxy_udp.close()
     print("---Successfully closed the socket")

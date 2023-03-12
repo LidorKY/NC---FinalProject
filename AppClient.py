@@ -31,15 +31,11 @@ def send_ack(str):
 if __name__ == "__main__":
 
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
     # the loop for receiving and sending the data
     print("hello I am the client\n")
-
     # receiving data from user
     data = input("pls enter a site you want to get: ")
     print("\n")
-
-
     # sending a requested site to the proxy
     request(data)
 
